@@ -35,40 +35,205 @@ VTEP (VxLAN Tunnel End Point) is a component that handles the encapsulation and 
 
 By the end of this task, you should have two VMs, each running a Docker container. These containers should be able to communicate with each other over the VxLAN network, despite being on separate physical or virtual hosts.
 
-## Create 2 EC2 instances (VM) in a Public Subnet within AWS VPC
+
+
+
+
+
+
+## Create 2 EC2 instances (VM) in a Public Subnet within AWS VPC using PULUMI
 
 ![alt text](./images/image-15.png)
- 
-### Create an AWS VPC
-- Name: `my-vpc`
-- CIDR block: `10.0.0.0/16`
 
-### Create a subnet
-- Name:` my-subnet`
-- CIDR block: `10.0.0.0/24`
+### Configure AWS CLI
 
-### Create an Internet Gateway
-- Name: `my-internet-gateway`
-- Attach it to the my-vpc.
+Configure AWS CLI with the necessary credentials. Run the following command and follow the prompts to configure it:
 
-### Create a route table:
-   - Name:`my-route-table`
-   - Associate route table with our subnet
+```sh
+aws configure
+```
 
+This command sets up your AWS CLI with the necessary credentials, region, and output format.
 
-After this VPC setup is complete the resource-map will be as follows:
+![](https://github.com/Konami33/poridhi.io.intern/blob/main/PULUMI/PULUMI%20js/Lab-3/images/5.png?raw=true)
 
-![alt text](./images/image.png)
+You will find the `AWS Access key` and `AWS Seceret Access key` on Lab description page,where you generated the credentials
+
+![](https://github.com/Konami33/poridhi.io.intern/blob/main/PULUMI/PULUMI%20js/Lab-3/images/6.png?raw=true)
 
 
-### Launch 2 EC2 instances
-- Use `Ubuntu` AMI
-- Use type `t2.micro`
-- Create a new key pair (e.g., `my-key`) and save the key in local machine
-- Create a security group allowing all traffic (for testing purposes only)
-- Enable public IP allocation
+### Set Up a Pulumi Project
 
-After creating the EC2 instance we can see them from the console:
+1. **Set Up a Pulumi Project**:
+- Create a new directory for your project and navigate into it:
+    ```sh
+    mkdir aws-infra
+    cd aws-infra
+    ```
+
+2. **Install python `venv`**:
+
+    ```sh 
+    sudo apt update
+    sudo apt install python3.8-venv
+    ```
+
+3. **Initialize a New Pulumi Project**:
+- Run the following command to create a new Pulumi project:
+
+    ```sh
+    pulumi new aws-python
+    ```
+    Follow the prompts to set up your project.
+
+4. **Create Key Pair**:
+
+- Create a new key pair for our instances using the following command:
+
+    ```sh
+    aws ec2 create-key-pair --key-name my-key  --query 'KeyMaterial' --output text > my-key.pem
+    ```
+
+    These commands will create key pair for EC2 instances.
+
+5. **Set File Permissions of the key files**:
+
+- **For Linux**:
+    ```sh
+    chmod 400 my-key.pem
+    ```
+
+### Write Code for infrastructure creation
+
+1. **Open `__main__.py` file in your project directory**:
+
+   ```python
+   import pulumi
+   import pulumi_aws as aws
+
+
+   # Create a VPC
+   vpc = aws.ec2.Vpc("my-vpc",
+      cidr_block="10.0.0.0/16",
+      tags={
+         "Name": "my-vpc",
+      })
+
+   pulumi.export("vpcId", vpc.id)
+
+
+   # Create a public subnet
+   public_subnet = aws.ec2.Subnet("my-subnet",
+      vpc_id=vpc.id,
+      cidr_block="10.0.0.0/24",
+      availability_zone="ap-southeast-1a",
+      map_public_ip_on_launch=True,
+      tags={
+         "Name": "my-subnet",
+      })
+
+   pulumi.export("publicSubnetId", public_subnet.id)
+
+
+   # Create an Internet Gateway
+   igw = aws.ec2.InternetGateway("my-internet-gateway",
+      vpc_id=vpc.id,
+      tags={
+         "Name": "my-internet-gateway",
+      })
+
+   pulumi.export("igwId", igw.id)
+
+
+   # Create a route table
+   public_route_table = aws.ec2.RouteTable("my-route-table",
+      vpc_id=vpc.id,
+      tags={
+         "Name": "my-route-table",
+      })
+
+   pulumi.export("publicRouteTableId", public_route_table.id)
+
+
+   # Create a route in the route table for the Internet Gateway
+   route = aws.ec2.Route("igw-route",
+      route_table_id=public_route_table.id,
+      destination_cidr_block="0.0.0.0/0",
+      gateway_id=igw.id)
+
+
+   # Associate the route table with the public subnet
+   route_table_association = aws.ec2.RouteTableAssociation("public-route-table-association",
+      subnet_id=public_subnet.id,
+      route_table_id=public_route_table.id)
+
+
+   # Create a security group for the public instance
+   public_security_group = aws.ec2.SecurityGroup("public-secgrp",
+      vpc_id=vpc.id,
+      description="Enable HTTP and SSH access for public instance",
+      ingress=[
+         {"protocol": "-1", "from_port": 0, "to_port": 0, "cidr_blocks": ["0.0.0.0/0"]},
+      ],
+      egress=[
+         {"protocol": "-1", "from_port": 0, "to_port": 0, "cidr_blocks": ["0.0.0.0/0"]},
+      ])
+
+   # Use the specified Ubuntu 24.04 LTS AMI
+   ami_id = "ami-01811d4912b4ccb26"
+
+
+   # Create EC2 instances
+   instance1 = aws.ec2.Instance("my-instance-1",
+      instance_type="t2.micro",
+      vpc_security_group_ids=[public_security_group.id],
+      ami=ami_id,
+      subnet_id=public_subnet.id,
+      key_name="my-key",
+      associate_public_ip_address=True,
+      tags={
+         "Name": "my-instance-1",
+      })
+
+   pulumi.export("publicInstanceId", instance1.id)
+   pulumi.export("publicInstanceIp", instance1.public_ip)
+
+
+   instance2 = aws.ec2.Instance("my-instance-2",
+      instance_type="t2.micro",
+      vpc_security_group_ids=[public_security_group.id],
+      ami=ami_id,
+      subnet_id=public_subnet.id,
+      key_name="my-key",
+      associate_public_ip_address=True,
+      tags={
+         "Name": "my-instance-2",
+      })
+
+   pulumi.export("publicInstanceId", instance2.id)
+   pulumi.export("publicInstanceIp", instance2.public_ip)
+   ```
+
+    **NOTE:** Update the security group *inbound rules* accordingly to your requirement. But for now it is set up to allow all traffic from all sources. You can change it later. 
+
+### Deploy the Pulumi Stack
+
+1. **Deploy the stack**:
+
+    ```sh
+    pulumi up
+    ```
+    Review the changes and confirm by typing "yes".
+
+    ![alt text](./images/image-17.png)
+
+### Verify the Deployment
+
+After creating the infra we can see them from the console:
+
+1. `VPC resource map`:
+
+   ![alt text](./images/image.png)
 
 1. `my-instyance-1`:
 
