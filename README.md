@@ -22,7 +22,8 @@ VTEP (VxLAN Tunnel End Point) is a component that handles the encapsulation and 
 
 ## Task Overview
 
-![alt text](./images/image-18.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-18.png?raw=true)
+
 
 ### In this hands-on we will do the following:
 - Set up two virtual machines (EC2 instances)
@@ -43,7 +44,7 @@ By the end of this task, you should have two VMs, each running a Docker containe
 
 ## Create 2 EC2 instances (VM) in a Public Subnet within AWS VPC using PULUMI
 
-![alt text](./images/image-15.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-15.png?raw=true)
 
 ### Configure AWS CLI
 
@@ -225,7 +226,7 @@ You will find the `AWS Access key` and `AWS Seceret Access key` on Lab descripti
     ```
     Review the changes and confirm by typing "yes".
 
-    ![alt text](./images/image-17.png)
+    ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-17.png?raw=true)
 
 ### Verify the Deployment
 
@@ -233,15 +234,15 @@ After creating the infra we can see them from the console:
 
 1. `VPC resource map`:
 
-   ![alt text](./images/image.png)
+   ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image.png?raw=true)
 
 1. `my-instyance-1`:
 
-    ![alt text](./images/image-1.png)
+    ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-1.png?raw=true)
 
 2. `my-instyance-2`:
 
-    ![alt text](./images/image-2.png)
+    ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-2.png?raw=true)
 
 
 
@@ -286,7 +287,7 @@ On both Hosts/ EC2 instances, follow these steps:
 
 Expected outputs:
 
-![alt text](./images/image-3.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-3.png?raw=true)
 
 **Note:** You have to run these commands in both instances. 
 
@@ -311,7 +312,7 @@ Let's run docker container `ubuntu` on top of newly created docker bridge networ
 
     Expected output:
 
-    ![alt text](./images/image-5.png)
+    ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-5.png?raw=true)
 
 3. **Verify the IP address of the container:**
 
@@ -327,7 +328,7 @@ Let's run docker container `ubuntu` on top of newly created docker bridge networ
 
     Expected output:
 
-   ![alt text](./images/image-6.png)
+   ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-6.png?raw=true)
 
 ### On Host-2 (my-instance-2):
 
@@ -345,7 +346,7 @@ Let's run docker container `ubuntu` on top of newly created docker bridge networ
 
     Expected output:
 
-    ![alt text](./images/image-7.png)
+    ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-7.png?raw=true)
 
 3. **Verify the IP address of the container:**
 
@@ -361,7 +362,7 @@ Let's run docker container `ubuntu` on top of newly created docker bridge networ
 
     Expected output:
 
-   ![alt text](./images/image-8.png)
+   ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-8.png?raw=true)
 
 
 ## Test Container Communication (Pre-VxLAN)
@@ -382,11 +383,11 @@ ping <other_container_ip> -c 2
 
 From host-1 container to host-2 container:
 
-![alt text](./images/image-9.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-9.png?raw=true)
 
 From host-2 container to host-1 container:
 
-![alt text](./images/image-10.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-10.png?raw=true)
 
 
 ## Create VxLAN Tunnel
@@ -433,7 +434,7 @@ It’s time to create a VxLAN tunnel to establish communication between two host
    route -n
    ```
 
-   ![alt text](./images/image-11.png)
+   ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-11.png?raw=true)
 
 ### Configure VxLAN on Host-02
 
@@ -471,7 +472,7 @@ It’s time to create a VxLAN tunnel to establish communication between two host
    route -n
    ```
 
-   ![alt text](./images/image-12.png)
+   ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-12.png?raw=true)
 
 ## Test Container Communication (Post-VxLAN)
 
@@ -486,11 +487,11 @@ ping <other_container_ip> -c 2
 
 In Host-1:
 
-![alt text](./images/image-13.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-13.png?raw=true)
 
 In host-2:
 
-![alt text](./images/image-14.png)
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-14.png?raw=true)
 
 ## Conclusion
 
