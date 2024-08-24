@@ -22,7 +22,7 @@ VTEP (VxLAN Tunnel End Point) is a component that handles the encapsulation and 
 
 ## Task Overview
 
-![alt text](./images/image-16.png)
+![alt text](./images/image-18.png)
 
 ### In this hands-on we will do the following:
 - Set up two virtual machines (EC2 instances)
