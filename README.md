@@ -20,6 +20,9 @@ VNI (VxLAN Network Identifier) is a 24-bit identifier for the LAN segment, simil
 
 VTEP (VxLAN Tunnel End Point) is a component that handles the encapsulation and decapsulation of VxLAN traffic. It has an IP address in the underlay network and is associated with one or more VNIs. VTEPs create stateless tunnels across the network to transport encapsulated frames between source and destination switches.
 
+![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-19.png?raw=true)
+
+
 ## Task Overview
 
 ![alt text](https://github.com/Minhaz00/Multi-Container-Host-Networking/blob/main/images/image-18.png?raw=true)
